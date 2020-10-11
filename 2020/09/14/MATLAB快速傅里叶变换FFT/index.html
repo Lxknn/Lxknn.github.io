@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="在频域分析中，快速傅里叶变换(Fast Fourier Transform, FFT)是一种计算离散傅里叶变换(Discrete Fourier Transform, DFT)的快速算法，因此从离散傅里叶变换说起。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MATLAB快速傅里叶变换(FFT)">
+<meta property="og:url" content="http://example.com/2020/09/14/MATLAB%E5%BF%AB%E9%80%9F%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2FFT/index.html">
+<meta property="og:site_name" content="Lxk&#39;s Notes">
+<meta property="og:description" content="在频域分析中，快速傅里叶变换(Fast Fourier Transform, FFT)是一种计算离散傅里叶变换(Discrete Fourier Transform, DFT)的快速算法，因此从离散傅里叶变换说起。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/09/20/7dcsyJErZ6tlzLS.jpg">
+<meta property="og:image" content="https://i.loli.net/2020/09/20/FV9NRvyKmEcGt7C.jpg">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/Kp9tmDJPu21haM6.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/oeL3H6bA2lXM9cE.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/q5Qrp6bhSieMyfw.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/21/JQZqLi4CvaxNnUO.png">
+<meta property="article:published_time" content="2020-09-14T01:47:40.000Z">
+<meta property="article:modified_time" content="2020-10-11T13:15:12.834Z">
+<meta property="article:author" content="Lxk">
+<meta property="article:tag" content="信号处理 频域分析 傅里叶变换">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/09/20/7dcsyJErZ6tlzLS.jpg">
+
+<link rel="canonical" href="http://example.com/2020/09/14/MATLAB%E5%BF%AB%E9%80%9F%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2FFT/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MATLAB快速傅里叶变换(FFT) | Lxk's Notes</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lxk's Notes</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">飞鸿踏雪应留痕</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/14/MATLAB%E5%BF%AB%E9%80%9F%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2FFT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lxk">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lxk's Notes">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MATLAB快速傅里叶变换(FFT)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-14 09:47:40" itemprop="dateCreated datePublished" datetime="2020-09-14T09:47:40+08:00">2020-09-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><em>在频域分析中，快速傅里叶变换(Fast Fourier Transform, FFT)是一种计算离散傅里叶变换(Discrete Fourier Transform, DFT)的快速算法，因此从离散傅里叶变换说起。</em></p>
+<a id="more"></a>
+<h1 id="离散傅里叶变换"><a href="#离散傅里叶变换" class="headerlink" title="离散傅里叶变换"></a>离散傅里叶变换</h1><p>在MATLAB中模拟生成一个长度为500的含有白噪声的数字信号$x$，对其做FFT得到相同长度的数组$y$</p>
+<script type="math/tex; mode=display">
+x=1+2*randn(1,500)+2*sin(2*\pi*200*t)+2*cos(2*\pi*500*t)+cos(2*\pi*600*t)</script><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">clear;clc;close all;</span><br><span class="line">fs=<span class="number">1000</span>; N=<span class="number">500</span>;</span><br><span class="line">t=(<span class="number">0</span>:N<span class="number">-1</span>)/fs;   <span class="comment">%生成时间序列</span></span><br><span class="line"></span><br><span class="line">x=<span class="number">1</span>+<span class="number">2</span>*<span class="built_in">randn</span>(<span class="number">1</span>,<span class="number">1000</span>)+<span class="number">2</span>*<span class="built_in">sin</span>(<span class="number">2</span>*<span class="built_in">pi</span>*<span class="number">200</span>*t)+<span class="number">2</span>*<span class="built_in">cos</span>(<span class="number">2</span>*<span class="built_in">pi</span>*<span class="number">500</span>*t)+<span class="built_in">cos</span>(<span class="number">2</span>*<span class="built_in">pi</span>*<span class="number">600</span>*t);</span><br><span class="line">y=fft(x);</span><br><span class="line"><span class="built_in">plot</span>(y)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2020/09/20/7dcsyJErZ6tlzLS.jpg" alt="untitled"></p>
+<p>直接把$y$画出来得不到任何信息，因为做DFT得到的$X[k]$是复数，复数的模代表某一频率分量的幅度，复数的角度代表某一频率分量的相位，因此将$y$取模，再画出来</p>
+<p><img src="https://i.loli.net/2020/09/20/FV9NRvyKmEcGt7C.jpg" alt="untitled01"></p>
+<p>此时可以看到六个明显的频率分量，但其横坐标单位显然不是频率（纵坐标是点数，此处为500点FFT），纵坐标也不是频率分量的幅度，下面分析如何从这个横纵坐标还原频率与幅度信息。</p>
+<p>N点序列$x[n]$的DFT公式</p>
+<script type="math/tex; mode=display">
+X[k]=\sum_{n=0}^{N-1}x[n]e^{-j2{\pi}kn/N},    0{\leqslant}k{\leqslant}N-1</script><p>离散傅里叶逆变换(IDFT)为</p>
+<script type="math/tex; mode=display">
+x[n]=\frac{1}{N}\sum_{k=0}^{N-1}X[k]e^{j2{\pi}kn/N},    0{\leqslant}n{\leqslant}N-1</script><h2 id="还原实际频率（横坐标）"><a href="#还原实际频率（横坐标）" class="headerlink" title="还原实际频率（横坐标）"></a>还原实际频率（横坐标）</h2><p>由逆变换IDFT公式知，$X[k]$的模实际是频率分量$k\omega_0$的相对幅度，N个谐波的叠加得到的$x[n]$为时间$t=n/{fs}$时的信号大小（$fs$为系统采样率）。</p>
+<p>对比DFT公式，可知一次谐波基频为$\omega_0=2\pi/N$，又有$n=t*fs$，因此上面两式可以表示为如下形式</p>
+<script type="math/tex; mode=display">
+X[k]=\sum_{n=0}^{N-1}x[n]e^{-jk\omega_0*fs*t},    t=\frac{n}{fs}</script><script type="math/tex; mode=display">
+x[n]=\frac{1}{N}\sum_{k=0}^{N-1}X[k]e^{jk\omega_0*fs*t},    t=\frac{n}{fs}</script><p>所以$X[k]$，即横坐标第$k$个点对应的实际角频率为$k\omega_0*fs=k\frac{2\pi}{N}fs$，频率则为角频率除以$2\pi$得$f_k=k\frac{fs}{N}。$</p>
+<p>由于MATLAB中数组下标从1开始，因此<strong>在MATLAB中$y（k）$对应的实际频率为$(k-1)\frac{fs}{N}$，频谱分辨率为$\frac{fs}{N}$。</strong></p>
+<h2 id="还原实际幅度（纵坐标）"><a href="#还原实际幅度（纵坐标）" class="headerlink" title="还原实际幅度（纵坐标）"></a>还原实际幅度（纵坐标）</h2><p>对N点<strong>实数</strong>序列$x[n]$做DFT得到的N个值有这个规律：第$k$个值与第$(N+2-k)$个值互为共轭，其中k的取值范围为$2{\leq}k{\leq}ceil(N/2)$。比如对实数序列[0 1 2 3 4 5 6 7]做DFT，结果如下图所示：</p>
+<p><img src="https://i.loli.net/2020/09/21/Kp9tmDJPu21haM6.png" alt="image-20200921141051265"></p>
+<p>这是由DFT的性质决定的，只要是对实数信号做DFT，那么必然有这个结果。只有两个点没有互为共轭的数：第1个点和第N/2+1（N为偶数的时候）个点，这两个点分别对应直流（频率为0）分量和频率为fs/2的分量，但由于Nyquist定理我们只考虑$[0,fs/2]$区间的频率。因此可以理解为除了0和fs/2这两个频率处的信号，其他频率的强度都有一半被分到$[fs/2,fs]$上了。注意IDFT公式前面还有一个$\frac{1}{N}$的系数</p>
+<script type="math/tex; mode=display">
+x[n]=\frac{1}{N}\sum_{k=0}^{N-1}X[k]e^{j2{\pi}kn/N},    0{\leqslant}n{\leqslant}N-1</script><p><strong>因此k=1和k=N/2+1（频率为0和fs/2）时，$k\omega_0$对应的幅度为$\frac{X[k]}{N}$；</strong></p>
+<p><strong>k取1~N/2+1中间的其他值时，$k\omega_0$对应的幅度为$\frac{2*X[k]}{N}$。</strong></p>
+<h1 id="MATLAB运行结果"><a href="#MATLAB运行结果" class="headerlink" title="MATLAB运行结果"></a>MATLAB运行结果</h1><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">clear;clc;close all;</span><br><span class="line">fs=<span class="number">1000</span>; N=<span class="number">500</span>;</span><br><span class="line">t=(<span class="number">0</span>:N<span class="number">-1</span>)/fs;   <span class="comment">%生成时间序列</span></span><br><span class="line"></span><br><span class="line">x=<span class="number">1</span>+<span class="number">1.5</span>*<span class="built_in">sin</span>(<span class="number">2</span>*<span class="built_in">pi</span>*<span class="number">215</span>*t)+<span class="number">2</span>*<span class="built_in">cos</span>(<span class="number">2</span>*<span class="built_in">pi</span>*<span class="number">500</span>*t)+<span class="built_in">cos</span>(<span class="number">2</span>*<span class="built_in">pi</span>*<span class="number">637</span>*t);</span><br><span class="line">y=<span class="built_in">abs</span>(fft(x));</span><br><span class="line"></span><br><span class="line">m=y(<span class="number">1</span>:<span class="built_in">floor</span>(N/<span class="number">2</span>)+<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">%获得各个频率分量对应的实际幅度：</span></span><br><span class="line"><span class="comment">%直流分量和频率为采样率一半的分量（对应第1项和第N/2+1项）的实际幅度为fft得到的y的第一项的幅值除以长度N；%其他频率为除以N/2</span></span><br><span class="line">m=m/N;m(<span class="number">2</span>:<span class="keyword">end</span><span class="number">-1</span>)=m(<span class="number">2</span>:<span class="keyword">end</span><span class="number">-1</span>)*<span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">%获得实际的频率值，长度为N的点中第k个点对应的频率为(k-1)*r/N，频谱分辨率为r/N；</span></span><br><span class="line"><span class="comment">%实际上根据Nyquist采样定理，只有1~N/2+1（N为2的整数次方）之间的点代表的频率是有效的。</span></span><br><span class="line">f=(<span class="number">0</span>:N<span class="number">-1</span>)*fs/N;</span><br><span class="line">f_half=(<span class="number">0</span>:<span class="built_in">floor</span>(N/<span class="number">2</span>))*fs/N;</span><br><span class="line"></span><br><span class="line"><span class="built_in">figure</span>(<span class="number">1</span>)</span><br><span class="line"><span class="built_in">plot</span>(f_half,m)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2020/09/21/oeL3H6bA2lXM9cE.png" alt="image-20200921153447894"></p>
+<p>该结果存在两个问题：</p>
+<ol>
+<li>各分量频率与幅度与原始信号x并不完全相等</li>
+<li>多出了一个363Hz的分量，少了637Hz的分量</li>
+</ol>
+<p>问题1是因为此处设置采样率为1000Hz，而采样点数为500，由上面对如何还原实际频率的分析中可知这里的频谱分辨率为fs/N=2Hz，这导致不能准确取到原始信号分量的频率。我们将采样点数设置为1000，频谱分辨率变为1Hz，就可以发现幅度准确了，如下图所示：</p>
+<p><img src="https://i.loli.net/2020/09/21/q5Qrp6bhSieMyfw.png" alt="image-20200921153531244"></p>
+<p>问题二是因为原始信号中637Hz的频率分量超出了Nyquist采样定理所规定的fs/2的最高频率，我们将0~fs整个频段的频谱画出来会发现是关于fs/2对称的，这里的363Hz实际是637Hz：</p>
+<p><img src="https://i.loli.net/2020/09/21/JQZqLi4CvaxNnUO.png" alt="image-20200921153616493"></p>
+<p>因此在设置采样率fs时，需要设置为待分析频段最大频率的两倍以上，否则比如在本例中将会无法区分363Hz和637Hz。</p>
+<p>一种区分思路是改变采样率，比如采样率改变为1200Hz，如果实际信号确实含有363Hz分量，那么这条线仍是363Hz；如果是实际频率是637Hz，那么由于fs/2成了600Hz，这条线将变为600-37=563Hz，产生了移动，从而可以区分开来。</p>
+<h1 id="快速傅里叶变换"><a href="#快速傅里叶变换" class="headerlink" title="快速傅里叶变换"></a>快速傅里叶变换</h1><p>本文开头提到，FFT只是实现DFT的一种快速算法，在频域分析这个领域，我们不考虑计算过程只考虑结果，这种情况下不必深究FFT与DFT到底有什么不同。</p>
+<p>但在算法领域，FFT被广泛应用于计算多项式相乘的结果。考虑下面两个N次多项式相乘得到的2N次多项式的系数</p>
+<script type="math/tex; mode=display">
+p_1=a_0+a_1x+a_2x^2+...+a_Nx^N</script><script type="math/tex; mode=display">
+p_2=b_0+b_1x+b_2x^2+...+b_Nx^N</script><p>朴素的计算方法是采用矩阵相乘计算，其时间复杂度为$O(n^2)$，而FFT能够将其降到$O(nlog(n))$，当n很大时（实际工程应用中的n往往很大）FFT能够极大降低运算时间，也因此FFT算法被称为20世纪最伟大的工程算法之一。</p>
+<p>其具体原理与本专业相关度不大，要解释清楚也需要大量笔墨，就不再在此展开，有兴趣深入了解可参考文末文章推荐。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86-%E9%A2%91%E5%9F%9F%E5%88%86%E6%9E%90-%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/" rel="tag"># 信号处理 频域分析 傅里叶变换</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/13/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/09/16/MATLAB%E9%94%81%E7%9B%B8%E6%94%BE%E5%A4%A7%E5%99%A8/" rel="next" title="MATLAB双相（相位不敏感）锁相放大器">
+      MATLAB双相（相位不敏感）锁相放大器 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A6%BB%E6%95%A3%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2"><span class="nav-number">1.</span> <span class="nav-text">离散傅里叶变换</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%98%E5%8E%9F%E5%AE%9E%E9%99%85%E9%A2%91%E7%8E%87%EF%BC%88%E6%A8%AA%E5%9D%90%E6%A0%87%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">还原实际频率（横坐标）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%98%E5%8E%9F%E5%AE%9E%E9%99%85%E5%B9%85%E5%BA%A6%EF%BC%88%E7%BA%B5%E5%9D%90%E6%A0%87%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">还原实际幅度（纵坐标）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MATLAB%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">2.</span> <span class="nav-text">MATLAB运行结果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">快速傅里叶变换</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lxk</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lxk</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

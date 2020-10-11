@@ -17,20 +17,20 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="原理锁相放大器(Locked-in Amplifier, LIA)的作用是从输入信号中提取出某个指定频率的信号。 单相LIA锁相放大器主要由锁相环(Phase Locked Loop, PLL)、混频器(Mixer)、低通滤波器(Low Pass Filter, LPF)三部分组成">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MATLAB实现双相（相位不敏感）锁相放大器">
+<meta property="og:title" content="MATLAB双相（相位不敏感）锁相放大器">
 <meta property="og:url" content="http://example.com/2020/09/16/MATLAB%E9%94%81%E7%9B%B8%E6%94%BE%E5%A4%A7%E5%99%A8/index.html">
-<meta property="og:site_name" content="Lxk&#39;s Blog">
+<meta property="og:site_name" content="Lxk&#39;s Notes">
 <meta property="og:description" content="原理锁相放大器(Locked-in Amplifier, LIA)的作用是从输入信号中提取出某个指定频率的信号。 单相LIA锁相放大器主要由锁相环(Phase Locked Loop, PLL)、混频器(Mixer)、低通滤波器(Low Pass Filter, LPF)三部分组成">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2020/09/17/xepWabQ13l8ngoL.png">
 <meta property="og:image" content="https://i.loli.net/2020/09/17/PyVNrXf96oHvZMF.png">
 <meta property="article:published_time" content="2020-09-16T11:34:08.000Z">
-<meta property="article:modified_time" content="2020-09-18T09:01:04.137Z">
+<meta property="article:modified_time" content="2020-10-11T13:15:38.847Z">
 <meta property="article:author" content="Lxk">
 <meta property="article:tag" content="信号处理">
 <meta name="twitter:card" content="summary">
@@ -49,7 +49,7 @@
   };
 </script>
 
-  <title>MATLAB实现双相（相位不敏感）锁相放大器 | Lxk's Blog</title>
+  <title>MATLAB双相（相位不敏感）锁相放大器 | Lxk's Notes</title>
   
 
 
@@ -100,7 +100,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">Lxk's Blog</h1>
+      <h1 class="site-title">Lxk's Notes</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
       <p class="site-subtitle" itemprop="description">飞鸿踏雪应留痕</p>
@@ -202,11 +202,11 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lxk's Blog">
+      <meta itemprop="name" content="Lxk's Notes">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          MATLAB实现双相（相位不敏感）锁相放大器
+          MATLAB双相（相位不敏感）锁相放大器
         </h1>
 
         <div class="post-meta">
@@ -262,6 +262,8 @@ Asin(\omega_st)*sin(\omega_rt)=\frac{A}{2}[cos((\omega_s-\omega_r)t+\theta)+cos(
 
 <p>两个输出一般称为X轴输出和Y轴输出，两者合成可以得到相位不敏感的输出。</p>
 <h1 id="MATLAB实现"><a href="#MATLAB实现" class="headerlink" title="MATLAB实现"></a>MATLAB实现</h1><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% 双相位（相位不敏感）锁相放大器</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sla</span>=<span class="title">lock_in_amp</span><span class="params">(s,fs,fr)</span>   %输入参数为待处理信号、采样频率、参考信号频率</span></span><br><span class="line"><span class="comment">% s=I;fs=fs;fr=fm;</span></span><br><span class="line">N=<span class="built_in">length</span>(s);    <span class="comment">%得到采样点数</span></span><br><span class="line">t=(<span class="number">0</span>:N<span class="number">-1</span>)/fs;   <span class="comment">%根据采样频率与采样点数构造时间序列</span></span><br><span class="line"></span><br><span class="line">x=<span class="number">2</span>*s.*<span class="built_in">cos</span>(<span class="number">2</span>*<span class="built_in">pi</span>*fr*t);  <span class="comment">%X轴信号</span></span><br><span class="line">y=<span class="number">2</span>*s.*<span class="built_in">sin</span>(<span class="number">2</span>*<span class="built_in">pi</span>*fr*t);  <span class="comment">%Y轴信号</span></span><br><span class="line"></span><br><span class="line">f_low=<span class="number">0</span>;</span><br><span class="line">f_high=<span class="number">5</span>;  <span class="comment">%进行低频滤波，设置滤波宽度为10Hz</span></span><br><span class="line">k_low=<span class="built_in">max</span>(<span class="built_in">floor</span>(f_low/fs*N+<span class="number">1</span>),<span class="number">1</span>);</span><br><span class="line">k_high=<span class="built_in">min</span>(<span class="built_in">floor</span>(f_high/fs*N+<span class="number">1</span>),N/<span class="number">2</span>+<span class="number">1</span>);   <span class="comment">%找到频率区间对应的点区间</span></span><br><span class="line"></span><br><span class="line">fbx=fft(x);    <span class="comment">%x轴滤波</span></span><br><span class="line">fax=<span class="built_in">zeros</span>(<span class="number">1</span>,N);</span><br><span class="line">fax(k_low:k_high)=fbx(k_low:k_high);</span><br><span class="line">fax(N+<span class="number">1</span>-k_high:N+<span class="number">1</span>-k_low)=fbx(N+<span class="number">1</span>-k_high:N+<span class="number">1</span>-k_low);</span><br><span class="line">sx=<span class="built_in">real</span>(ifft(fax));</span><br><span class="line"><span class="comment">% subplot(311)</span></span><br><span class="line"><span class="comment">% plot(t,sx)</span></span><br><span class="line"></span><br><span class="line">fby=fft(y);    <span class="comment">%y轴滤波</span></span><br><span class="line">fay=<span class="built_in">zeros</span>(<span class="number">1</span>,N);</span><br><span class="line">fay(k_low:k_high)=fby(k_low:k_high);</span><br><span class="line">fay(N+<span class="number">1</span>-k_high:N+<span class="number">1</span>-k_low)=fby(N+<span class="number">1</span>-k_high:N+<span class="number">1</span>-k_low);</span><br><span class="line">sy=<span class="built_in">real</span>(ifft(fay));</span><br><span class="line"><span class="comment">% subplot(312)</span></span><br><span class="line"><span class="comment">% plot(t,sy)</span></span><br><span class="line"></span><br><span class="line">sla=(sx.^<span class="number">2</span>+sy.^<span class="number">2</span>).^<span class="number">0.5</span>; <span class="comment">%合成两轴信号</span></span><br><span class="line"><span class="comment">% subplot(313)</span></span><br><span class="line"><span class="comment">% plot(t,sla)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h1 id="挖坑"><a href="#挖坑" class="headerlink" title="挖坑"></a>挖坑</h1><p><em>锁相环、混频器</em></p>
+
     </div>
 
     
@@ -279,8 +281,8 @@ Asin(\omega_st)*sin(\omega_rt)=\frac{A}{2}[cos((\omega_s-\omega_r)t+\theta)+cos(
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/09/13/hello-world/" rel="prev" title="Hello World">
-      <i class="fa fa-chevron-left"></i> Hello World
+    <a href="/2020/09/14/MATLAB%E5%BF%AB%E9%80%9F%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2FFT/" rel="prev" title="MATLAB快速傅里叶变换(FFT)">
+      <i class="fa fa-chevron-left"></i> MATLAB快速傅里叶变换(FFT)
     </a></div>
       <div class="post-nav-item"></div>
     </div>
@@ -341,7 +343,7 @@ Asin(\omega_st)*sin(\omega_rt)=\frac{A}{2}[cos((\omega_s-\omega_r)t+\theta)+cos(
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E7%9B%B8LIA"><span class="nav-number">1.1.</span> <span class="nav-text">单相LIA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E7%9B%B8LIA"><span class="nav-number">1.2.</span> <span class="nav-text">双相LIA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MATLAB%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">MATLAB实现</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E7%9B%B8LIA"><span class="nav-number">1.1.</span> <span class="nav-text">单相LIA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E7%9B%B8LIA"><span class="nav-number">1.2.</span> <span class="nav-text">双相LIA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MATLAB%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">MATLAB实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%96%E5%9D%91"><span class="nav-number">3.</span> <span class="nav-text">挖坑</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -355,7 +357,7 @@ Asin(\omega_st)*sin(\omega_rt)=\frac{A}{2}[cos((\omega_s-\omega_r)t+\theta)+cos(
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -368,7 +370,7 @@ Asin(\omega_st)*sin(\omega_rt)=\frac{A}{2}[cos((\omega_s-\omega_r)t+\theta)+cos(
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
