@@ -30,9 +30,9 @@
 <meta property="og:image" content="https://i.loli.net/2020/09/17/xepWabQ13l8ngoL.png">
 <meta property="og:image" content="https://i.loli.net/2020/09/17/PyVNrXf96oHvZMF.png">
 <meta property="article:published_time" content="2020-09-16T11:34:08.000Z">
-<meta property="article:modified_time" content="2020-10-11T13:15:38.847Z">
+<meta property="article:modified_time" content="2020-10-11T13:41:19.311Z">
 <meta property="article:author" content="Lxk">
-<meta property="article:tag" content="信号处理">
+<meta property="article:tag" content="锁相放大">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://i.loli.net/2020/09/17/xepWabQ13l8ngoL.png">
 
@@ -262,17 +262,19 @@ Asin(\omega_st)*sin(\omega_rt)=\frac{A}{2}[cos((\omega_s-\omega_r)t+\theta)+cos(
 
 <p>两个输出一般称为X轴输出和Y轴输出，两者合成可以得到相位不敏感的输出。</p>
 <h1 id="MATLAB实现"><a href="#MATLAB实现" class="headerlink" title="MATLAB实现"></a>MATLAB实现</h1><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% 双相位（相位不敏感）锁相放大器</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sla</span>=<span class="title">lock_in_amp</span><span class="params">(s,fs,fr)</span>   %输入参数为待处理信号、采样频率、参考信号频率</span></span><br><span class="line"><span class="comment">% s=I;fs=fs;fr=fm;</span></span><br><span class="line">N=<span class="built_in">length</span>(s);    <span class="comment">%得到采样点数</span></span><br><span class="line">t=(<span class="number">0</span>:N<span class="number">-1</span>)/fs;   <span class="comment">%根据采样频率与采样点数构造时间序列</span></span><br><span class="line"></span><br><span class="line">x=<span class="number">2</span>*s.*<span class="built_in">cos</span>(<span class="number">2</span>*<span class="built_in">pi</span>*fr*t);  <span class="comment">%X轴信号</span></span><br><span class="line">y=<span class="number">2</span>*s.*<span class="built_in">sin</span>(<span class="number">2</span>*<span class="built_in">pi</span>*fr*t);  <span class="comment">%Y轴信号</span></span><br><span class="line"></span><br><span class="line">f_low=<span class="number">0</span>;</span><br><span class="line">f_high=<span class="number">5</span>;  <span class="comment">%进行低频滤波，设置滤波宽度为10Hz</span></span><br><span class="line">k_low=<span class="built_in">max</span>(<span class="built_in">floor</span>(f_low/fs*N+<span class="number">1</span>),<span class="number">1</span>);</span><br><span class="line">k_high=<span class="built_in">min</span>(<span class="built_in">floor</span>(f_high/fs*N+<span class="number">1</span>),N/<span class="number">2</span>+<span class="number">1</span>);   <span class="comment">%找到频率区间对应的点区间</span></span><br><span class="line"></span><br><span class="line">fbx=fft(x);    <span class="comment">%x轴滤波</span></span><br><span class="line">fax=<span class="built_in">zeros</span>(<span class="number">1</span>,N);</span><br><span class="line">fax(k_low:k_high)=fbx(k_low:k_high);</span><br><span class="line">fax(N+<span class="number">1</span>-k_high:N+<span class="number">1</span>-k_low)=fbx(N+<span class="number">1</span>-k_high:N+<span class="number">1</span>-k_low);</span><br><span class="line">sx=<span class="built_in">real</span>(ifft(fax));</span><br><span class="line"><span class="comment">% subplot(311)</span></span><br><span class="line"><span class="comment">% plot(t,sx)</span></span><br><span class="line"></span><br><span class="line">fby=fft(y);    <span class="comment">%y轴滤波</span></span><br><span class="line">fay=<span class="built_in">zeros</span>(<span class="number">1</span>,N);</span><br><span class="line">fay(k_low:k_high)=fby(k_low:k_high);</span><br><span class="line">fay(N+<span class="number">1</span>-k_high:N+<span class="number">1</span>-k_low)=fby(N+<span class="number">1</span>-k_high:N+<span class="number">1</span>-k_low);</span><br><span class="line">sy=<span class="built_in">real</span>(ifft(fay));</span><br><span class="line"><span class="comment">% subplot(312)</span></span><br><span class="line"><span class="comment">% plot(t,sy)</span></span><br><span class="line"></span><br><span class="line">sla=(sx.^<span class="number">2</span>+sy.^<span class="number">2</span>).^<span class="number">0.5</span>; <span class="comment">%合成两轴信号</span></span><br><span class="line"><span class="comment">% subplot(313)</span></span><br><span class="line"><span class="comment">% plot(t,sla)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-<h1 id="挖坑"><a href="#挖坑" class="headerlink" title="挖坑"></a>挖坑</h1><p><em>锁相环、混频器</em></p>
+<h1 id="挖个坑，有机会的话填上"><a href="#挖个坑，有机会的话填上" class="headerlink" title="挖个坑，有机会的话填上"></a>挖个坑，有机会的话填上</h1><p><em>锁相环、混频器</em></p>
 
     </div>
 
     
     
     
+      
+
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86/" rel="tag"># 信号处理</a>
+              <a href="/tags/%E9%94%81%E7%9B%B8%E6%94%BE%E5%A4%A7/" rel="tag"># 锁相放大</a>
           </div>
 
         
@@ -343,7 +345,7 @@ Asin(\omega_st)*sin(\omega_rt)=\frac{A}{2}[cos((\omega_s-\omega_r)t+\theta)+cos(
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E7%9B%B8LIA"><span class="nav-number">1.1.</span> <span class="nav-text">单相LIA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E7%9B%B8LIA"><span class="nav-number">1.2.</span> <span class="nav-text">双相LIA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MATLAB%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">MATLAB实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%96%E5%9D%91"><span class="nav-number">3.</span> <span class="nav-text">挖坑</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E7%9B%B8LIA"><span class="nav-number">1.1.</span> <span class="nav-text">单相LIA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E7%9B%B8LIA"><span class="nav-number">1.2.</span> <span class="nav-text">双相LIA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MATLAB%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">MATLAB实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%96%E4%B8%AA%E5%9D%91%EF%BC%8C%E6%9C%89%E6%9C%BA%E4%BC%9A%E7%9A%84%E8%AF%9D%E5%A1%AB%E4%B8%8A"><span class="nav-number">3.</span> <span class="nav-text">挖个坑，有机会的话填上</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

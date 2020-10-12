@@ -34,9 +34,9 @@
 <meta property="og:image" content="https://i.loli.net/2020/09/21/q5Qrp6bhSieMyfw.png">
 <meta property="og:image" content="https://i.loli.net/2020/09/21/JQZqLi4CvaxNnUO.png">
 <meta property="article:published_time" content="2020-09-14T01:47:40.000Z">
-<meta property="article:modified_time" content="2020-10-11T13:15:12.834Z">
+<meta property="article:modified_time" content="2020-10-11T13:45:00.637Z">
 <meta property="article:author" content="Lxk">
-<meta property="article:tag" content="信号处理 频域分析 傅里叶变换">
+<meta property="article:tag" content="傅里叶变换">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://i.loli.net/2020/09/20/7dcsyJErZ6tlzLS.jpg">
 
@@ -287,16 +287,20 @@ x[n]=\frac{1}{N}\sum_{k=0}^{N-1}X[k]e^{j2{\pi}kn/N},    0{\leqslant}n{\leqslant}
 p_1=a_0+a_1x+a_2x^2+...+a_Nx^N</script><script type="math/tex; mode=display">
 p_2=b_0+b_1x+b_2x^2+...+b_Nx^N</script><p>朴素的计算方法是采用矩阵相乘计算，其时间复杂度为$O(n^2)$，而FFT能够将其降到$O(nlog(n))$，当n很大时（实际工程应用中的n往往很大）FFT能够极大降低运算时间，也因此FFT算法被称为20世纪最伟大的工程算法之一。</p>
 <p>其具体原理与本专业相关度不大，要解释清楚也需要大量笔墨，就不再在此展开，有兴趣深入了解可参考文末文章推荐。</p>
+<h1 id="相关推荐"><a href="#相关推荐" class="headerlink" title="相关推荐"></a>相关推荐</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31584464">一小时学会快速傅里叶变换（Fast Fourier Transform）</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/40505277">FFT(快速傅里叶变换)0基础详解！附NTT（ACM/OI）</a></p>
 
     </div>
 
     
     
     
+      
+
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86-%E9%A2%91%E5%9F%9F%E5%88%86%E6%9E%90-%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/" rel="tag"># 信号处理 频域分析 傅里叶变换</a>
+              <a href="/tags/%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/" rel="tag"># 傅里叶变换</a>
           </div>
 
         
@@ -370,7 +374,7 @@ p_2=b_0+b_1x+b_2x^2+...+b_Nx^N</script><p>朴素的计算方法是采用矩阵�
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A6%BB%E6%95%A3%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2"><span class="nav-number">1.</span> <span class="nav-text">离散傅里叶变换</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%98%E5%8E%9F%E5%AE%9E%E9%99%85%E9%A2%91%E7%8E%87%EF%BC%88%E6%A8%AA%E5%9D%90%E6%A0%87%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">还原实际频率（横坐标）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%98%E5%8E%9F%E5%AE%9E%E9%99%85%E5%B9%85%E5%BA%A6%EF%BC%88%E7%BA%B5%E5%9D%90%E6%A0%87%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">还原实际幅度（纵坐标）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MATLAB%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">2.</span> <span class="nav-text">MATLAB运行结果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">快速傅里叶变换</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A6%BB%E6%95%A3%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2"><span class="nav-number">1.</span> <span class="nav-text">离散傅里叶变换</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%98%E5%8E%9F%E5%AE%9E%E9%99%85%E9%A2%91%E7%8E%87%EF%BC%88%E6%A8%AA%E5%9D%90%E6%A0%87%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">还原实际频率（横坐标）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%98%E5%8E%9F%E5%AE%9E%E9%99%85%E5%B9%85%E5%BA%A6%EF%BC%88%E7%BA%B5%E5%9D%90%E6%A0%87%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">还原实际幅度（纵坐标）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MATLAB%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">2.</span> <span class="nav-text">MATLAB运行结果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">快速傅里叶变换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%8E%A8%E8%8D%90"><span class="nav-number">4.</span> <span class="nav-text">相关推荐</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
